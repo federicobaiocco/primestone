@@ -1,0 +1,8 @@
+servicePointId,readingType,variableId,deviceId,meteringType,readingUtcLocalTime,readingDateSource,readingLocalTime,dstStatus,channel,unitOfMeasure,qualityCodesSystemId,qualityCodesCategorization,qualityCodesIndex,intervalSize,logNumber,ct,pt,ke,sf,version,readingsValue,primarySource,owner,guidFile,estatus,registersNumber,eventsCode,agentId,agentDescription
+RegTest-sdp_id-rex-01,Eventos,Communications Elapsed time for pass-through operation (msec),2,Main,,,2011-05-16T06:32:37.000-03:00,,,,,,,,,,,,,,1482,Remoto,sacar del Path,sacar del Path,Activo,,83,,
+RegTest-sdp_id-rex-01,Eventos,Tamper Alert Config Table Write Warning,2,Main,,,2011-05-16T06:32:37.000-03:00,,,,,,,,,,,,,,0,Remoto,sacar del Path,sacar del Path,Activo,,71,,
+RegTest-sdp_id-rex-01,Eventos,Meter Health Radio Config Error,2,Main,,,2011-05-16T06:32:37.000-03:00,,,,,,,,,,,,,,0,Remoto,sacar del Path,sacar del Path,Activo,,72,,
+RegTest-sdp_id-rex-01,Eventos,Service Voltage Monitoring Max Event,2,Main,,,2011-05-16T06:32:37.000-03:00,,,,,,,,,,,,,,0,Remoto,sacar del Path,sacar del Path,Activo,,78,,
+RegTest-sdp_id-rex-01,Eventos,Service Momentary Outage Count,2,Main,,,2011-05-16T06:32:37.000-03:00,,,,,,,,,,,,,,6,Remoto,sacar del Path,sacar del Path,Activo,,73,,
+RegTest-sdp_id-rex-01,Eventos,Service Sustained Outage Count,2,Main,,,2011-05-16T06:32:37.000-03:00,,,,,,,,,,,,,,3,Remoto,sacar del Path,sacar del Path,Activo,,74,,
+RegTest-sdp_id-rex-01,Eventos,Service Sustained Outage Duration (secs),2,Main,,,2011-05-16T06:32:37.000-03:00,,,,,,,,,,,,,,1344,Remoto,sacar del Path,sacar del Path,Activo,,75,,
