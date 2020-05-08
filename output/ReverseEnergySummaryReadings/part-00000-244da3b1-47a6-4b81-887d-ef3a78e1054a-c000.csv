@@ -1,0 +1,3 @@
+servicePointId,readingType,variableId,deviceId,meteringType,readingUtcLocalTime,readingDateSource,readingLocalTime,dstStatus,channel,unitOfMeasure,qualityCodesSystemId,qualityCodesCategorization,qualityCodesIndex,intervalSize,logNumber,ct,pt,ke,sf,version,readingsValue,primarySource,owner,guidFile,estatus,registersNumber,eventsCode,agentId,agentDescription
+RegTest-sdp_id-rex-01,Registros,Reverse energy summary,2,Main,,,,,,,,,,,,,,,,,0,Remoto,sacar del Path,sacar del Path,Activo,,,,
+RegTest-sdp_id-rex-01,Registros,Reverse energy summary,2,Main,,,,,,,,,,,,,,,,,0,Remoto,sacar del Path,sacar del Path,Activo,,,,

@@ -1207,6 +1207,116 @@ outageCountReadings = outageCountReadings.withColumn("tmp", arrays_zip("ReadingT
                                                 col("FixedAttribute_agentDescription").alias("agentDescription"))
 ######################################################################################################################################################
 
+######################################################################################################################################################
+reverseEnergySummaryReadings = df.withColumn("CurrentValue", col("ReverseEnergySummary.ReverseEnergy._CurrentValue")) \
+                                .withColumn("FixedAttribute_readingLocalTime", lit("")) \
+                                .withColumn("FixedAttribute_unitOfMeasure", lit("")) \
+                                .withColumn("FixedAttribute_variableId", lit("Reverse energy summary")) \
+                                .withColumn("MeterReadings_Source", col("_Source")) \
+                                .withColumn("Meter_SdpIdent", col("Meter._SdpIdent")) \
+                                .withColumn("FixedAttribute_readingType", lit("Registros")) \
+                                .withColumn("Meter_MeterIrn", col("Meter._MeterIrn")) \
+                                .withColumn("FixedAttribute_meteringType", lit("Main")) \
+                                .withColumn("FixedAttribute_readingUtcLocalTime", lit("")) \
+                                .withColumn("FixedAttribute_readingDateSource", lit("")) \
+                                .withColumn("FixedAttribute_dstStatus", lit("")) \
+                                .withColumn("FixedAttribute_channel", lit("")) \
+                                .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
+                                .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
+                                .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
+                                .withColumn("FixedAttribute_intervalSize", lit("")) \
+                                .withColumn("FixedAttribute_logNumber", lit("")) \
+                                .withColumn("FixedAttribute_ct", lit("")) \
+                                .withColumn("FixedAttribute_pt", lit("")) \
+                                .withColumn("FixedAttribute_ke", lit("")) \
+                                .withColumn("FixedAttribute_sf", lit("")) \
+                                .withColumn("FixedAttribute_version", lit("")) \
+                                .withColumn("FixedAttribute_readingsSource", lit("")) \
+                                .withColumn("FixedAttribute_owner", lit("sacar del Path")) \
+                                .withColumn("FixedAttribute_guidFile", lit("sacar del Path")) \
+                                .withColumn("FixedAttribute_estatus", lit("Activo")) \
+                                .withColumn("FixedAttribute_registersNumber", lit("")) \
+                                .withColumn("FixedAttribute_eventsCode", lit("")) \
+                                .withColumn("FixedAttribute_agentId", lit("")) \
+                                .withColumn("FixedAttribute_agentDescription", lit("")) \
+                                .select(
+                                        "CurrentValue", 
+                                        "FixedAttribute_readingLocalTime",
+                                        "FixedAttribute_unitOfMeasure",
+                                        "FixedAttribute_variableId",
+                                        "MeterReadings_Source",
+                                        "Meter_SdpIdent",
+                                        "FixedAttribute_readingType",
+                                        "Meter_MeterIrn",
+                                        "FixedAttribute_meteringType",
+                                        "FixedAttribute_readingUtcLocalTime",
+                                        "FixedAttribute_readingDateSource",
+                                        "FixedAttribute_dstStatus",
+                                        "FixedAttribute_channel",
+                                        "FixedAttribute_qualityCodesSystemId",
+                                        "FixedAttribute_qualityCodesCategorization",
+                                        "FixedAttribute_qualityCodesIndex",
+                                        "FixedAttribute_intervalSize",
+                                        "FixedAttribute_logNumber",
+                                        "FixedAttribute_ct",
+                                        "FixedAttribute_pt",
+                                        "FixedAttribute_ke",
+                                        "FixedAttribute_sf",
+                                        "FixedAttribute_version",
+                                        "FixedAttribute_readingsSource",
+                                        "FixedAttribute_owner",
+                                        "FixedAttribute_guidFile",
+                                        "FixedAttribute_estatus",
+                                        "FixedAttribute_registersNumber",
+                                        "FixedAttribute_eventsCode",
+                                        "FixedAttribute_agentId",
+                                        "FixedAttribute_agentDescription") 
+reverseEnergySummaryReadings=reverseEnergySummaryReadings.withColumn("tmp", arrays_zip("CurrentValue")) \
+                                                        .withColumn("tmp", explode("tmp")) \
+                                                        .withColumn("MeterReadings_Source", 
+                                                        when(col("MeterReadings_Source") == "Visual", lit("Visual")) \
+                                                        .when(col("MeterReadings_Source") == "Remote", lit("Remoto")) \
+                                                        .when(col("MeterReadings_Source") == "LocalRF", lit("LAN")) \
+                                                        .when(col("MeterReadings_Source") == "Optical", lit("Optical")) \
+                                                        .when(col("MeterReadings_Source") == "Manually Estimated", lit("Visual")) \
+                                                        .when(col("MeterReadings_Source") == "LegacySystem", lit("HES")) \
+                                                        .otherwise(col("MeterReadings_Source"))) \
+                                                        .withColumn("servicePointId", 
+                                                                when(col("Meter_SdpIdent").isNull(), col("Meter_MeterIrn")) \
+                                                                .otherwise(col("Meter_SdpIdent"))) \
+                                                        .select(
+                                                                col("servicePointId"),
+                                                                col("FixedAttribute_readingType").alias("readingType"),
+                                                                col("FixedAttribute_variableId").alias("variableId"),
+                                                                col("Meter_MeterIrn").alias("deviceId"),
+                                                                col("FixedAttribute_meteringType").alias("meteringType"),
+                                                                col("FixedAttribute_readingUtcLocalTime").alias("readingUtcLocalTime"),
+                                                                col("FixedAttribute_readingDateSource").alias("readingDateSource"),
+                                                                col("FixedAttribute_readingLocalTime").alias("readingLocalTime"),
+                                                                col("FixedAttribute_dstStatus").alias("dstStatus"),
+                                                                col("FixedAttribute_channel").alias("channel"),
+                                                                col("FixedAttribute_unitOfMeasure").alias("unitOfMeasure"),
+                                                                col("FixedAttribute_qualityCodesSystemId").alias("qualityCodesSystemId"),
+                                                                col("FixedAttribute_qualityCodesCategorization").alias("qualityCodesCategorization"),
+                                                                col("FixedAttribute_qualityCodesIndex").alias("qualityCodesIndex"),
+                                                                col("FixedAttribute_intervalSize").alias("intervalSize"),
+                                                                col("FixedAttribute_logNumber").alias("logNumber"),
+                                                                col("FixedAttribute_ct").alias("ct"),
+                                                                col("FixedAttribute_pt").alias("pt"),
+                                                                col("FixedAttribute_ke").alias("ke"),
+                                                                col("FixedAttribute_sf").alias("sf"),
+                                                                col("FixedAttribute_version").alias("version"),
+                                                                col("tmp.CurrentValue").alias("readingsValue"),
+                                                                col("MeterReadings_Source").alias("primarySource"),
+                                                                col("FixedAttribute_owner").alias("owner"),
+                                                                col("FixedAttribute_guidFile").alias("guidFile"),
+                                                                col("FixedAttribute_estatus").alias("estatus"),
+                                                                col("FixedAttribute_registersNumber").alias("registersNumber"),
+                                                                col("FixedAttribute_eventsCode").alias("eventsCode"),
+                                                                col("FixedAttribute_agentId").alias("agentId"),
+                                                                col("FixedAttribute_agentDescription").alias("agentDescription"))
+######################################################################################################################################################
+
 print("-----------------------MAX DEMAND DATA READINGS ------------------------------")
 maxDemandDataReadings.write.format("csv").mode("overwrite")\
         .save("./output/MaxDemandDataReadings",header = 'true',emptyValue='')
@@ -1255,4 +1365,9 @@ print("-------------------------------------------------------------------------
 print("-----------------------OUTAGE COUNT READINGS ---------------------------")
 outageCountReadings.write.format("csv").mode("overwrite")\
                         .save("./output/OutageCountReadings",header = 'true', emptyValue='')
+print("------------------------------------------------------------------------------")
+
+print("-----------------------REVERSE ENEGRY SUMMARY READINGS ---------------------------")
+reverseEnergySummaryReadings.write.format("csv").mode("overwrite")\
+                        .save("./output/ReverseEnergySummaryReadings",header = 'true', emptyValue='')
 print("------------------------------------------------------------------------------")
