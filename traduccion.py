@@ -5,6 +5,8 @@ from pyspark.sql.functions import *
 from pyspark import SparkContext
 from pyspark import SparkConf
 import json
+from functools import reduce 
+from pyspark.sql import DataFrame
 
 appName = "PySpark - AMRDEF"
 
@@ -1481,3 +1483,15 @@ print("-----------------------REVERSE ENEGRY SUMMARY READINGS ------------------
 reverseEnergySummaryReadings.write.format("csv").mode("overwrite")\
                         .save("./output/ReverseEnergySummaryReadings",header = 'true', emptyValue='')
 print("------------------------------------------------------------------------------")
+
+def unionAll(*dfs):
+    return reduce(DataFrame.unionAll, dfs)
+
+union = unionAll(maxDemandDataReadings, demandResetCountReadings, \
+        consumptionDataReadings, coincidentDemandDataReadings, \
+        cumulativeDemandDataReadings, demandResetReadings, \
+        instrumentationValueReadings, statusReadings, \
+        loadProfileSummaryReadings, outageCountReadings, \
+        reverseEnergySummaryReadings).coalesce(1) #Aca los estoy uniendo en una sola partición, si se saca el .coalesce(1) se van a crear distintas particiones para c/u
+
+union.write.format('csv').mode("overwrite").save("./output/union", header="true", emptyValue="")
