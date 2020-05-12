@@ -1,0 +1,4 @@
+servicePointId,readingType,variableId,deviceId,meteringType,readingUtcLocalTime,readingDateSource,readingLocalTime,dstStatus,channel,unitOfMeasure,qualityCodesSystemId,qualityCodesCategorization,qualityCodesIndex,intervalSize,logNumber,ct,pt,ke,sf,version,readingsValue,primarySource,owner,guidFile,estatus,registersNumber,eventsCode,agentId,agentDescription
+2testEE,Registros,Demand Reset,2,Main,,,2011-05-16T06:32:00.000-03:00,,,Count,qualityCodesSystemId,qualityCodesCategorization,qualityCodesIndex,,,,,,,,14,Remoto,sacar del Path,sacar del Path,Activo,,,,
+2testEE,Registros,Demand Reset,2,Main,,,2011-05-16T06:35:00.000-03:00,,,Count,qualityCodesSystemId,qualityCodesCategorization,qualityCodesIndex,,,,,,,,16,Remoto,sacar del Path,sacar del Path,Activo,,,,
+2testEE,Registros,Demand Reset,2,Main,,,2011-05-16T06:40:00.000-03:00,,,Count,qualityCodesSystemId,qualityCodesCategorization,qualityCodesIndex,,,,,,,,20,Remoto,sacar del Path,sacar del Path,Activo,,,,
