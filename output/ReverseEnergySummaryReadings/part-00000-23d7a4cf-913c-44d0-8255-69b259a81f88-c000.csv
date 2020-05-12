@@ -1,3 +1,0 @@
-servicePointId,readingType,variableId,deviceId,meteringType,readingUtcLocalTime,readingDateSource,readingLocalTime,dstStatus,channel,unitOfMeasure,qualityCodesSystemId,qualityCodesCategorization,qualityCodesIndex,intervalSize,logNumber,ct,pt,ke,sf,version,readingsValue,primarySource,owner,guidFile,estatus,registersNumber,eventsCode,agentId,agentDescription
-2testEE,Registros,Reverse energy summary,2,Main,,,,,,,,,,,,,,,,,0,Remoto,sacar del Path,sacar del Path,Activo,,,,
-2testEE,Registros,Reverse energy summary,2,Main,,,,,,,,,,,,,,,,,0,Remoto,sacar del Path,sacar del Path,Activo,,,,
