@@ -81,9 +81,9 @@ maxDemandDataReadings = df.withColumn("TouBucket", col("MaxDemandData.MaxDemandS
                             .withColumn("FixedAttribute_readingDateSource", lit("")) \
                             .withColumn("FixedAttribute_dstStatus", lit("")) \
                             .withColumn("FixedAttribute_channel", lit("")) \
-                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("qualityCodesSystemId")) \
-                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("qualityCodesCategorization")) \
-                            .withColumn("FixedAttribute_qualityCodesIndex", lit("qualityCodesIndex")) \
+                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
                             .withColumn("FixedAttribute_intervalSize", lit("")) \
                             .withColumn("FixedAttribute_logNumber", lit("")) \
                             .withColumn("FixedAttribute_ct", lit("")) \
@@ -196,9 +196,9 @@ demandResetCountReadings = df.withColumn("Count", col("DemandResetCount._Count")
                             .withColumn("FixedAttribute_readingDateSource", lit("")) \
                             .withColumn("FixedAttribute_dstStatus", lit("")) \
                             .withColumn("FixedAttribute_channel", lit("")) \
-                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("qualityCodesSystemId")) \
-                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("qualityCodesCategorization")) \
-                            .withColumn("FixedAttribute_qualityCodesIndex", lit("qualityCodesIndex")) \
+                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
                             .withColumn("FixedAttribute_intervalSize", lit("")) \
                             .withColumn("FixedAttribute_logNumber", lit("")) \
                             .withColumn("FixedAttribute_ct", lit("")) \
@@ -311,9 +311,9 @@ consumptionDataReadings = df.withColumn("TouBucket", col("ConsumptionData.Consum
                             .withColumn("FixedAttribute_readingDateSource", lit("")) \
                             .withColumn("FixedAttribute_dstStatus", lit("")) \
                             .withColumn("FixedAttribute_channel", lit("")) \
-                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("qualityCodesSystemId")) \
-                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("qualityCodesCategorization")) \
-                            .withColumn("FixedAttribute_qualityCodesIndex", lit("qualityCodesIndex")) \
+                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
                             .withColumn("FixedAttribute_intervalSize", lit("")) \
                             .withColumn("FixedAttribute_logNumber", lit("")) \
                             .withColumn("FixedAttribute_ct", lit("")) \
@@ -424,9 +424,9 @@ coincidentDemandDataReadings = df.withColumn("TouBucket", col("CoincidentDemandD
                             .withColumn("FixedAttribute_readingDateSource", lit("")) \
                             .withColumn("FixedAttribute_dstStatus", lit("")) \
                             .withColumn("FixedAttribute_channel", lit("")) \
-                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("qualityCodesSystemId")) \
-                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("qualityCodesCategorization")) \
-                            .withColumn("FixedAttribute_qualityCodesIndex", lit("qualityCodesIndex")) \
+                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
                             .withColumn("FixedAttribute_intervalSize", lit("")) \
                             .withColumn("FixedAttribute_logNumber", lit("")) \
                             .withColumn("FixedAttribute_ct", lit("")) \
@@ -542,9 +542,9 @@ cumulativeDemandDataReadings = df.withColumn("TouBucket", col("CumulativeDemandD
                             .withColumn("FixedAttribute_readingDateSource", lit("")) \
                             .withColumn("FixedAttribute_dstStatus", lit("")) \
                             .withColumn("FixedAttribute_channel", lit("")) \
-                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("qualityCodesSystemId")) \
-                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("qualityCodesCategorization")) \
-                            .withColumn("FixedAttribute_qualityCodesIndex", lit("qualityCodesIndex")) \
+                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
                             .withColumn("FixedAttribute_intervalSize", lit("")) \
                             .withColumn("FixedAttribute_logNumber", lit("")) \
                             .withColumn("FixedAttribute_ct", lit("")) \
@@ -657,9 +657,9 @@ demandResetReadings = df.withColumn("TimeStamp", col("DemandReset._TimeStamp")) 
                             .withColumn("FixedAttribute_readingDateSource", lit("")) \
                             .withColumn("FixedAttribute_dstStatus", lit("")) \
                             .withColumn("FixedAttribute_channel", lit("")) \
-                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("qualityCodesSystemId")) \
-                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("qualityCodesCategorization")) \
-                            .withColumn("FixedAttribute_qualityCodesIndex", lit("qualityCodesIndex")) \
+                            .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
+                            .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
                             .withColumn("FixedAttribute_intervalSize", lit("")) \
                             .withColumn("FixedAttribute_logNumber", lit("")) \
                             .withColumn("FixedAttribute_ct", lit("")) \
@@ -767,9 +767,9 @@ instrumentationValueReadings = df.withColumn("TimeStamp", col("InstrumentationVa
                                 .withColumn("FixedAttribute_readingDateSource", lit("")) \
                                 .withColumn("FixedAttribute_dstStatus", lit("")) \
                                 .withColumn("FixedAttribute_channel", lit("")) \
-                                .withColumn("FixedAttribute_qualityCodesSystemId", lit("qualityCodesSystemId")) \
-                                .withColumn("FixedAttribute_qualityCodesCategorization", lit("qualityCodesCategorization")) \
-                                .withColumn("FixedAttribute_qualityCodesIndex", lit("qualityCodesIndex")) \
+                                .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
+                                .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
+                                .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
                                 .withColumn("FixedAttribute_intervalSize", lit("")) \
                                 .withColumn("FixedAttribute_logNumber", lit("")) \
                                 .withColumn("FixedAttribute_ct", lit("")) \
