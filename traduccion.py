@@ -871,7 +871,6 @@ instrumentationValueReadings = instrumentationValueReadings.withColumn("tmp", ar
 ######################################################################################################################################################
 
 ######################################################################################################################################################
-
 StatusData = []
 for row in df.rdd.collect():
         MeterReadings_Source = row._Source
@@ -1410,6 +1409,8 @@ reverseEnergySummaryReadings=reverseEnergySummaryReadings.withColumn("tmp", arra
                                                                 col("FixedAttribute_agentId").alias("agentId"),
                                                                 col("FixedAttribute_agentDescription").alias("agentDescription"))
 ######################################################################################################################################################
+
+######################################################################################################################################################
 EventData = []
 for row in df.rdd.collect():
         MeterReadings_Source = row._Source
@@ -1466,7 +1467,6 @@ for row in df.rdd.collect():
                                                         "agentId":"",
                                                         "agentDescription":""
                                                 })
-
 EventData = spark.sparkContext.parallelize(EventData) \
                         .map(lambda x: Row(**OrderedDict(x.items())))
 eventDataReadings = spark.createDataFrame(EventData.coalesce(1)) \
@@ -1512,6 +1512,7 @@ eventDataReadings = spark.createDataFrame(EventData.coalesce(1)) \
                                 )
 ######################################################################################################################################################
 
+######################################################################################################################################################
 IntervalData = []
 for row in df.rdd.collect():
         MeterReadings_Source = row._Source
@@ -1533,6 +1534,73 @@ for row in df.rdd.collect():
                                 if servicePointId == None:
                                         servicePointId = Meter_Irn
 
+                                dst = ""
+                                QualityCode_SystemId = ""
+                                QualityCode_Categorization = ""
+                                QualityCode_Index = ""
+                                if reading.QualityFlags != None:
+                                        qualityFlag = reading.QualityFlags
+                                        if qualityFlag._TimeChanged != None:
+                                                QualityCode_SystemId = "2"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "9"
+                                        elif qualityFlag._ClockSetBackward != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "128"
+                                        elif qualityFlag._LongInterval != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "3"
+                                        elif qualityFlag._ClockSetForward != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "64"
+                                        elif qualityFlag._PartialInterval != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "2"
+                                        elif qualityFlag._InvalidTime != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "1"
+                                                QualityCode_Index = "9"
+                                        elif qualityFlag._SkippedInterval != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "4"
+                                        elif qualityFlag._CompleteOutage != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "2"
+                                                QualityCode_Index = "32"
+                                        elif qualityFlag._PulseOverflow != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "1"
+                                        elif qualityFlag._TestMode != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "5"
+                                        elif qualityFlag._Tamper != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "3"
+                                                QualityCode_Index = "0"
+                                        elif qualityFlag._PartialOutage != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "2"
+                                                QualityCode_Index = "32"
+                                        elif qualityFlag._SuspectedOutage != None or qualityFlag._Restoration != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "2"
+                                                QualityCode_Index = "0"
+                                        elif qualityFlag._DST != None:
+                                                QualityCode_SystemId = "1"
+                                                QualityCode_Categorization = "4"
+                                                QualityCode_Index = "16"
+                                                dst = "1"
+                                        elif qualityFlag._InvalidValue != None:
+                                                QualityCode_SystemId = "2"
+                                                QualityCode_Categorization = "5"
+                                                QualityCode_Index = "256"
 
                                 IntervalData.append ({
                                         "servicePointId":servicePointId,
@@ -1543,12 +1611,12 @@ for row in df.rdd.collect():
                                         "readingUtcLocalTime": "",
                                         "readingDateSource": "",
                                         "readingLocalTime": Reading_TimeStamp,
-                                        "dstStatus":"",
+                                        "dstStatus":dst,
                                         "channel":IntervalSpec_Channel,
                                         "unitOfMeasure":IntervalSpec_UOM,
-                                        "qualityCodesSystemId":"",
-                                        "qualityCodesCategorization":"",
-                                        "qualityCodesIndex":"",
+                                        "qualityCodesSystemId":QualityCode_SystemId,
+                                        "qualityCodesCategorization":QualityCode_Categorization,
+                                        "qualityCodesIndex":QualityCode_Index,
                                         "intervalSize":IntervalSpec_Interval,
                                         "logNumber": "1",
                                         "ct":"",
@@ -1566,7 +1634,6 @@ for row in df.rdd.collect():
                                         "agentId":"",
                                         "agentDescription":""
                                 })
-
 IntervalData = spark.sparkContext.parallelize(IntervalData) \
                         .map(lambda x: Row(**OrderedDict(x.items())))
 intervalDataReadings = spark.createDataFrame(IntervalData.coalesce(1)) \
