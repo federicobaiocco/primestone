@@ -7,6 +7,8 @@ from pyspark import SparkConf
 import json
 from functools import reduce 
 from pyspark.sql import DataFrame
+from collections import OrderedDict
+from pyspark.sql import Row
 
 appName = "PySpark - AMRDEF"
 
@@ -27,7 +29,6 @@ df = spark.read.format("com.databricks.spark.xml").options(rootTag=rootTag).opti
     .schema(schema) \
     .load("file:////home/federicobaiocco/Downloads/primestone/Scriptstraducccion/final/AMRDEF_sample.xml")
 
-#df.printSchema()
 '''
 Se crea un dataframe por cada tipo de lectura (MaxDemandData, DemandResetCount, etc.) porque es la forma más facil de tratarlos para la traducción.
 Cada dataframe se crea primero seleccionando las columnas que sean necesarias para ese tipo de lectura ( df.withColumn(..las col que hagan falta..).select(..) )
@@ -870,121 +871,104 @@ instrumentationValueReadings = instrumentationValueReadings.withColumn("tmp", ar
 ######################################################################################################################################################
 
 ######################################################################################################################################################
-statusReadings = df.withColumn("Id", col("Statuses.Status._Id")) \
-                .withColumn("Category", col("Statuses.Status._Category")) \
-                .withColumn("Name", col("Statuses.Status._Name")) \
-                .withColumn("Value", col("Statuses.Status._Value")) \
-                .withColumn("MeterReadings_CollectionTime", col("_CollectionTime")) \
-                .withColumn("FixedAttribute_unitOfMeasure", lit("")) \
-                .withColumn("MeterReadings_Source", col("_Source")) \
-                .withColumn("Meter_SdpIdent", col("Meter._SdpIdent")) \
-                .withColumn("FixedAttribute_readingType", lit("Eventos")) \
-                .withColumn("Meter_MeterIrn", col("Meter._MeterIrn")) \
-                .withColumn("FixedAttribute_meteringType", lit("Main")) \
-                .withColumn("FixedAttribute_readingUtcLocalTime", lit("")) \
-                .withColumn("FixedAttribute_readingDateSource", lit("")) \
-                .withColumn("FixedAttribute_dstStatus", lit("")) \
-                .withColumn("FixedAttribute_channel", lit("")) \
-                .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
-                .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
-                .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
-                .withColumn("FixedAttribute_intervalSize", lit("")) \
-                .withColumn("FixedAttribute_logNumber", lit("")) \
-                .withColumn("FixedAttribute_ct", lit("")) \
-                .withColumn("FixedAttribute_pt", lit("")) \
-                .withColumn("FixedAttribute_ke", lit("")) \
-                .withColumn("FixedAttribute_sf", lit("")) \
-                .withColumn("FixedAttribute_version", lit("")) \
-                .withColumn("FixedAttribute_readingsSource", lit("")) \
-                .withColumn("FixedAttribute_owner", lit("sacar del Path")) \
-                .withColumn("FixedAttribute_guidFile", lit("sacar del Path")) \
-                .withColumn("FixedAttribute_estatus", lit("Activo")) \
-                .withColumn("FixedAttribute_registersNumber", lit("")) \
-                .withColumn("FixedAttribute_agentId", lit("")) \
-                .withColumn("FixedAttribute_agentDescription", lit("")) \
-                .select(
-                        "Id", 
-                        "Category",
-                        "Name",
-                        "Value",
-                        "MeterReadings_CollectionTime",
-                        "FixedAttribute_unitOfMeasure",
-                        "MeterReadings_Source",
-                        "Meter_SdpIdent",
-                        "FixedAttribute_readingType",
-                        "Meter_MeterIrn",
-                        "FixedAttribute_meteringType",
-                        "FixedAttribute_readingUtcLocalTime",
-                        "FixedAttribute_readingDateSource",
-                        "FixedAttribute_dstStatus",
-                        "FixedAttribute_channel",
-                        "FixedAttribute_qualityCodesSystemId",
-                        "FixedAttribute_qualityCodesCategorization",
-                        "FixedAttribute_qualityCodesIndex",
-                        "FixedAttribute_intervalSize",
-                        "FixedAttribute_logNumber",
-                        "FixedAttribute_ct",
-                        "FixedAttribute_pt",
-                        "FixedAttribute_ke",
-                        "FixedAttribute_sf",
-                        "FixedAttribute_version",
-                        "FixedAttribute_readingsSource",
-                        "FixedAttribute_owner",
-                        "FixedAttribute_guidFile",
-                        "FixedAttribute_estatus",
-                        "FixedAttribute_registersNumber",
-                        "FixedAttribute_agentId",
-                        "FixedAttribute_agentDescription") 
-statusReadings = statusReadings.withColumn("tmp", arrays_zip("Id","Category","Name","Value")) \
-                                .withColumn("tmp", explode("tmp")) \
-                                .withColumn("MeterReadings_Source", 
-                                when(col("MeterReadings_Source") == "Visual", lit("Visual")) \
-                                .when(col("MeterReadings_Source") == "Remote", lit("Remoto")) \
-                                .when(col("MeterReadings_Source") == "LocalRF", lit("LAN")) \
-                                .when(col("MeterReadings_Source") == "Optical", lit("Optical")) \
-                                .when(col("MeterReadings_Source") == "Manually Estimated", lit("Visual")) \
-                                .when(col("MeterReadings_Source") == "LegacySystem", lit("HES")) \
-                                .otherwise(col("MeterReadings_Source"))) \
-                                .withColumn("Value", 
-                                        when(col("tmp.Value") == "true", "0") \
-                                        .when(col("tmp.Value") == "false", "") \
-                                        .otherwise(col("tmp.Value")) \
-                                ) \
-                                .withColumn("servicePointId", 
-                                        when(col("Meter_SdpIdent").isNull(), col("Meter_MeterIrn")) \
-                                        .otherwise(col("Meter_SdpIdent"))) \
-                                .select(
-                                        col("servicePointId"),
-                                        col("FixedAttribute_readingType").alias("readingType"),
-                                        concat(col("tmp.Category"),lit(" "),col("tmp.Name")).alias("variableId"),
-                                        col("Meter_MeterIrn").alias("deviceId"),
-                                        col("FixedAttribute_meteringType").alias("meteringType"),
-                                        col("FixedAttribute_readingUtcLocalTime").alias("readingUtcLocalTime"),
-                                        col("FixedAttribute_readingDateSource").alias("readingDateSource"),
-                                        col("MeterReadings_CollectionTime").alias("readingLocalTime"),
-                                        col("FixedAttribute_dstStatus").alias("dstStatus"),
-                                        col("FixedAttribute_channel").alias("channel"),
-                                        col("FixedAttribute_unitOfMeasure").alias("unitOfMeasure"),
-                                        col("FixedAttribute_qualityCodesSystemId").alias("qualityCodesSystemId"),
-                                        col("FixedAttribute_qualityCodesCategorization").alias("qualityCodesCategorization"),
-                                        col("FixedAttribute_qualityCodesIndex").alias("qualityCodesIndex"),
-                                        col("FixedAttribute_intervalSize").alias("intervalSize"),
-                                        col("FixedAttribute_logNumber").alias("logNumber"),
-                                        col("FixedAttribute_ct").alias("ct"),
-                                        col("FixedAttribute_pt").alias("pt"),
-                                        col("FixedAttribute_ke").alias("ke"),
-                                        col("FixedAttribute_sf").alias("sf"),
-                                        col("FixedAttribute_version").alias("version"),
-                                        col("Value").alias("readingsValue"),
-                                        col("MeterReadings_Source").alias("primarySource"),
-                                        col("FixedAttribute_owner").alias("owner"),
-                                        col("FixedAttribute_guidFile").alias("guidFile"),
-                                        col("FixedAttribute_estatus").alias("estatus"),
-                                        col("FixedAttribute_registersNumber").alias("registersNumber"),
-                                        col("tmp.Id").alias("eventsCode"),
-                                        col("FixedAttribute_agentId").alias("agentId"),
-                                        col("FixedAttribute_agentDescription").alias("agentDescription")) \
-                                .filter("readingsValue != ''") #En HU25658 hay una condición que dice que solo se toman leecturas de status si value = true o magnitud
+
+StatusData = []
+for row in df.rdd.collect():
+        MeterReadings_Source = row._Source
+        MeterReadings_CollectionTime = row._CollectionTime
+        Meter_Irn = row.Meter._MeterIrn
+        Meter_SdpIdent = row.Meter._SdpIdent
+        if row.Statuses != None:
+                for statuses in row.Statuses:
+                        for status in statuses.Status:
+                                Status_Id = status._Id
+                                Status_Category = status._Category
+                                Status_Name = status._Name
+                                Status_Value = status._Value
+
+                                servicePointId = Meter_SdpIdent
+                                if servicePointId == None:
+                                        servicePointId = Meter_Irn
+
+                                if Status_Value == "true": #Esta lectura solo se toma si Value=0 o magnitud
+                                        Status_Value = 0
+                                if Status_Value != "false":
+                                        StatusData.append ({
+                                                "servicePointId":servicePointId,
+                                                "readingType":"Eventos",
+                                                "variableId":Status_Category + ' ' + Status_Name,
+                                                "deviceId": Meter_Irn,
+                                                "meteringType": "Main",
+                                                "readingUtcLocalTime": "",
+                                                "readingDateSource": "",
+                                                "readingLocalTime": MeterReadings_CollectionTime,
+                                                "dstStatus":"",
+                                                "channel": "",
+                                                "unitOfMeasure":"",
+                                                "qualityCodesSystemId":"",
+                                                "qualityCodesCategorization":"",
+                                                "qualityCodesIndex":"",
+                                                "intervalSize":"",
+                                                "logNumber": "1",
+                                                "ct":"",
+                                                "pt":"",
+                                                "ke":"",
+                                                "sf":"",
+                                                "version":"Original",
+                                                "readingsValue": Status_Value,
+                                                "primarySource":MeterReadings_Source,
+                                                "owner":"",
+                                                "guidFile":"",
+                                                "estatus": "Activo",
+                                                "registersNumber":"",
+                                                "eventsCode":Status_Id,
+                                                "agentId":"",
+                                                "agentDescription":""
+                                        })
+
+StatusData = spark.sparkContext.parallelize(StatusData) \
+                        .map(lambda x: Row(**OrderedDict(x.items())))
+statusReadings = spark.createDataFrame(StatusData.coalesce(1)) \
+                        .withColumn("primarySource", 
+                                when(col("primarySource") == "Visual", lit("Visual")) \
+                                .when(col("primarySource") == "Remote", lit("Remoto")) \
+                                .when(col("primarySource") == "LocalRF", lit("LAN")) \
+                                .when(col("primarySource") == "Optical", lit("Optical")) \
+                                .when(col("primarySource") == "Manually Estimated", lit("Visual")) \
+                                .when(col("primarySource") == "LegacySystem", lit("HES")) \
+                                .otherwise(col("primarySource"))) \
+                        .select(
+                        "servicePointId",
+                        "readingType",
+                        "variableId",
+                        "deviceId",
+                        "meteringType",
+                        "readingUtcLocalTime",
+                        "readingDateSource",
+                        "readingLocalTime",
+                        "dstStatus",
+                        "channel",
+                        "unitOfMeasure",
+                        "qualityCodesSystemId",
+                        "qualityCodesCategorization",
+                        "qualityCodesIndex",
+                        "intervalSize",
+                        "logNumber",
+                        "ct",
+                        "pt",
+                        "ke",
+                        "sf",
+                        "version",
+                        "readingsValue",
+                        "primarySource",
+                        "owner",
+                        "guidFile",
+                        "estatus",
+                        "registersNumber",
+                        "eventsCode",
+                        "agentId",
+                        "agentDescription"
+                        )
 ######################################################################################################################################################
 
 ######################################################################################################################################################
@@ -1426,170 +1410,206 @@ reverseEnergySummaryReadings=reverseEnergySummaryReadings.withColumn("tmp", arra
                                                                 col("FixedAttribute_agentId").alias("agentId"),
                                                                 col("FixedAttribute_agentDescription").alias("agentDescription"))
 ######################################################################################################################################################
+EventData = []
+for row in df.rdd.collect():
+        MeterReadings_Source = row._Source
+        Meter_Irn = row.Meter._MeterIrn
+        Meter_SdpIdent = row.Meter._SdpIdent
+        if row.EventData != None:
+                for eventData in row.EventData:
+                        for event in eventData.Event:
+                                Event_DiscoveredAt = event._DiscoveredAt
+                                Event_TimeStamp = event._TimeStamp
 
-'''
- |-- EventData: array (nullable = true)
- |    |-- element: struct (containsNull = true)
- |    |    |-- Event: array (nullable = true)
- |    |    |    |-- element: struct (containsNull = true)
- |    |    |    |    |-- EventAttribute: array (nullable = true)
- |    |    |    |    |    |-- element: struct (containsNull = true)
- |    |    |    |    |    |    |-- _Name: string (nullable = true) *****
- |    |    |    |    |    |    |-- _Value: long (nullable = true)  *****
- |    |    |    |    |    |    |-- _valueTag: string (nullable = true)
- |    |    |    |    |-- _DiscoveredAt: timestamp (nullable = true) ****
- |    |    |    |    |-- _EventInfo: string (nullable = true)
- |    |    |    |    |-- _Source: string (nullable = true)
- |    |    |    |    |-- _TimeStamp: timestamp (nullable = true) ****
- |    |    |    |    |-- _valueTag: string (nullable = true)
- 
-'''
-# eventsDataReadings = df.select("EventData").withColumn("Event_exploded",explode("EventData.Event")) \
-#                                            .withColumn("EventAttribute_exploded",explode("Event_exploded.EventAttribute")) \
-#                                            .withColumn("Name", explode("EventAttribute_exploded._Name"))
+                                if event.EventAttribute != None:
+                                        for eventAttribute in event.EventAttribute:
+                                                EventAttribute_Name = eventAttribute._Name
+                                                EventAttribute_Value = eventAttribute._Value
 
-# eventsDataReadings = df.select("EventData",
-#                                 "_Source",
-#                                 "Meter._SdpIdent",
-#                                 "Meter._MeterIrn"
-#                                 ) \
-#                         .withColumn("Event",col("EventData.Event")) \
-#                         .withColumn("Event", explode("Event")) \
-#                         .select("_Source","_SdpIdent","_MeterIrn","Event") \
-#                         .withColumn("EventAttribute", explode("Event.EventAttribute")) 
+                                                servicePointId = Meter_SdpIdent
+                                                if servicePointId == None:
+                                                        servicePointId = Meter_Irn
+                                                
+                                                readingLocalTime = Event_TimeStamp
+                                                if readingLocalTime == None:
+                                                        readingLocalTime = Event_DiscoveredAt
 
-eventsDataReadings = df.select("EventData",
-                                "_Source",
-                                "Meter._SdpIdent",
-                                "Meter._MeterIrn"
-                                ) \
-                        .withColumn("Event",col("EventData.Event")) \
-                        .withColumn("Event_exploded", explode("Event")) \
-                        .withColumn("EventAttribute_exploded", explode("Event_exploded.EventAttribute")) \
-                        .withColumn("Name", col("EventAttribute_exploded._Name")) \
-                        .withColumn("Value", col("EventAttribute_exploded._Value")) \
-                        .withColumn("TimeStamp", col("Event_exploded._TimeStamp")) \
-                        .withColumn("TimeStamp", explode("TimeStamp")) \
-                        .withColumn("DiscoveredAt", col("Event_exploded._DiscoveredAt")) \
-                        .withColumn("tmp", arrays_zip("Name","Value")) \
-                        .withColumn("tmp", explode("tmp")) \
-                        .withColumn("Name", col("tmp.Name")) \
-                        .withColumn("Value", col("tmp.Value")) \
+                                                EventData.append ({
+                                                        "servicePointId":servicePointId,
+                                                        "readingType":"Eventos",
+                                                        "variableId":EventAttribute_Name,
+                                                        "deviceId": Meter_Irn,
+                                                        "meteringType": "Main",
+                                                        "readingUtcLocalTime": "",
+                                                        "readingDateSource": "",
+                                                        "readingLocalTime": readingLocalTime,
+                                                        "dstStatus":"",
+                                                        "channel":"",
+                                                        "unitOfMeasure":"",
+                                                        "qualityCodesSystemId":"",
+                                                        "qualityCodesCategorization":"",
+                                                        "qualityCodesIndex":"",
+                                                        "intervalSize":"",
+                                                        "logNumber": "",
+                                                        "ct":"",
+                                                        "pt":"",
+                                                        "ke":"",
+                                                        "sf":"",
+                                                        "version":"Original",
+                                                        "readingsValue": EventAttribute_Value,
+                                                        "primarySource":MeterReadings_Source,
+                                                        "owner":"",
+                                                        "guidFile":"",
+                                                        "estatus": "Activo",
+                                                        "registersNumber":"",
+                                                        "eventsCode":"",
+                                                        "agentId":"",
+                                                        "agentDescription":""
+                                                })
 
-eventsDataReadings.show()
-eventsDataReadings.printSchema()
-
-#intervalDataReadings = df.select(col())
+EventData = spark.sparkContext.parallelize(EventData) \
+                        .map(lambda x: Row(**OrderedDict(x.items())))
+eventDataReadings = spark.createDataFrame(EventData.coalesce(1)) \
+                                .withColumn("primarySource", 
+                                        when(col("primarySource") == "Visual", lit("Visual")) \
+                                        .when(col("primarySource") == "Remote", lit("Remoto")) \
+                                        .when(col("primarySource") == "LocalRF", lit("LAN")) \
+                                        .when(col("primarySource") == "Optical", lit("Optical")) \
+                                        .when(col("primarySource") == "Manually Estimated", lit("Visual")) \
+                                        .when(col("primarySource") == "LegacySystem", lit("HES")) \
+                                        .otherwise(col("primarySource"))) \
+                                .select(
+                                "servicePointId",
+                                "readingType",
+                                "variableId",
+                                "deviceId",
+                                "meteringType",
+                                "readingUtcLocalTime",
+                                "readingDateSource",
+                                "readingLocalTime",
+                                "dstStatus",
+                                "channel",
+                                "unitOfMeasure",
+                                "qualityCodesSystemId",
+                                "qualityCodesCategorization",
+                                "qualityCodesIndex",
+                                "intervalSize",
+                                "logNumber",
+                                "ct",
+                                "pt",
+                                "ke",
+                                "sf",
+                                "version",
+                                "readingsValue",
+                                "primarySource",
+                                "owner",
+                                "guidFile",
+                                "estatus",
+                                "registersNumber",
+                                "eventsCode",
+                                "agentId",
+                                "agentDescription"
+                                )
 ######################################################################################################################################################
-# intervalDataReadings = df.withColumn("IntervalSpec_UOM", col("IntervalData.IntervalSpec._UOM")) \
-#                         .withColumn("IntervalSpec_Direction", col("IntervalData.IntervalSpec._Direction")) \
-#                         .withColumn("IntervalSpec_Interval", col("IntervalData.IntervalSpec._Interval")) \
-#                         .withColumn("IntervalSpec_Channel", col("IntervalData.IntervalSpec._Channel")) \
-#                         .withColumn("IntervalSpec_Multiplier", col("IntervalData.IntervalSpec._Multiplier")) \
-#                         .withColumn("Timestamp", explode("IntervalData.Reading._Timestamp")) \
-#                         .withColumn("Rawreading", explode("IntervalData.Reading._Rawreading")) \
-#                         .withColumn("MeterReadings_Source", col("_Source")) \
-#                         .withColumn("Meter_SdpIdent", col("Meter._SdpIdent")) \
-#                         .withColumn("FixedAttribute_readingType", lit("Perfil de carga")) \
-#                         .withColumn("Meter_MeterIrn", col("Meter._MeterIrn")) \
-#                         .withColumn("FixedAttribute_meteringType", lit("Main")) \
-#                         .withColumn("FixedAttribute_readingUtcLocalTime", lit("")) \
-#                         .withColumn("FixedAttribute_readingDateSource", lit("")) \
-#                         .withColumn("FixedAttribute_dstStatus", lit("")) \
-#                         .withColumn("FixedAttribute_qualityCodesSystemId", lit("")) \
-#                         .withColumn("FixedAttribute_qualityCodesCategorization", lit("")) \
-#                         .withColumn("FixedAttribute_qualityCodesIndex", lit("")) \
-#                         .withColumn("FixedAttribute_logNumber", lit("1")) \
-#                         .withColumn("FixedAttribute_ct", lit("")) \
-#                         .withColumn("FixedAttribute_pt", lit("")) \
-#                         .withColumn("FixedAttribute_sf", lit("")) \
-#                         .withColumn("FixedAttribute_version", lit("Original")) \
-#                         .withColumn("FixedAttribute_readingsSource", lit("")) \
-#                         .withColumn("FixedAttribute_owner", lit("sacar del Path")) \
-#                         .withColumn("FixedAttribute_guidFile", lit("sacar del Path")) \
-#                         .withColumn("FixedAttribute_estatus", lit("Activo")) \
-#                         .withColumn("FixedAttribute_registersNumber", lit("")) \
-#                         .withColumn("FixedAttribute_eventsCode", lit("")) \
-#                         .withColumn("FixedAttribute_agentId", lit("")) \
-#                         .withColumn("FixedAttribute_agentDescription", lit("")) \
-#                         .select(
-#                                 "IntervalSpec_UOM",
-#                                 "IntervalSpec_Direction",
-#                                 "IntervalSpec_Interval",
-#                                 "IntervalSpec_Channel",
-#                                 "IntervalSpec_Multiplier",
-#                                 "Timestamp",
-#                                 "Rawreading",
-#                                 "MeterReadings_Source",
-#                                 "Meter_SdpIdent",
-#                                 "FixedAttribute_readingType",
-#                                 "Meter_MeterIrn",
-#                                 "FixedAttribute_meteringType",
-#                                 "FixedAttribute_readingUtcLocalTime",
-#                                 "FixedAttribute_readingDateSource",
-#                                 "FixedAttribute_dstStatus",
-#                                 "FixedAttribute_qualityCodesSystemId",
-#                                 "FixedAttribute_qualityCodesCategorization",
-#                                 "FixedAttribute_qualityCodesIndex",
-#                                 "FixedAttribute_logNumber",
-#                                 "FixedAttribute_ct",
-#                                 "FixedAttribute_pt",
-#                                 "FixedAttribute_sf",
-#                                 "FixedAttribute_version",
-#                                 "FixedAttribute_readingsSource",
-#                                 "FixedAttribute_owner",
-#                                 "FixedAttribute_guidFile",
-#                                 "FixedAttribute_estatus",
-#                                 "FixedAttribute_registersNumber",
-#                                 "FixedAttribute_eventsCode",
-#                                 "FixedAttribute_agentId",
-#                                 "FixedAttribute_agentDescription") 
-#intervalDataReadings.show()
 
-# intervalDataReadings=intervalDataReadings.withColumn("tmp", arrays_zip("Timestamp","Rawreading")) \
-#                                         .withColumn("tmp", explode("tmp")) \
-#                                         .withColumn("MeterReadings_Source", 
-#                                         when(col("MeterReadings_Source") == "Visual", lit("Visual")) \
-#                                         .when(col("MeterReadings_Source") == "Remote", lit("Remoto")) \
-#                                         .when(col("MeterReadings_Source") == "LocalRF", lit("LAN")) \
-#                                         .when(col("MeterReadings_Source") == "Optical", lit("Optical")) \
-#                                         .when(col("MeterReadings_Source") == "Manually Estimated", lit("Visual")) \
-#                                         .when(col("MeterReadings_Source") == "LegacySystem", lit("HES")) \
-#                                         .otherwise(col("MeterReadings_Source"))) \
-#                                         .withColumn("servicePointId", 
-#                                                 when(col("Meter_SdpIdent").isNull(), col("Meter_MeterIrn")) \
-#                                                 .otherwise(col("Meter_SdpIdent"))) \
-#                                         .select(
-#                                                 col("servicePointId"),
-#                                                 col("FixedAttribute_readingType").alias("readingType"),
-#                                                 concat(col("IntervalSpec_UOM"),lit(" "),col("IntervalSpec_Direction")).alias("variableId"),
-#                                                 col("Meter_MeterIrn").alias("deviceId"),
-#                                                 col("FixedAttribute_meteringType").alias("meteringType"),
-#                                                 col("FixedAttribute_readingUtcLocalTime").alias("readingUtcLocalTime"),
-#                                                 col("FixedAttribute_readingDateSource").alias("readingDateSource"),
-#                                                 col("tmp.Timestamp").alias("readingLocalTime"),
-#                                                 col("FixedAttribute_dstStatus").alias("dstStatus"),
-#                                                 col("IntervalSpec_Channel").alias("channel"),
-#                                                 col("IntervalSpec_UOM").alias("unitOfMeasure"),
-#                                                 col("FixedAttribute_qualityCodesSystemId").alias("qualityCodesSystemId"),
-#                                                 col("FixedAttribute_qualityCodesCategorization").alias("qualityCodesCategorization"),
-#                                                 col("FixedAttribute_qualityCodesIndex").alias("qualityCodesIndex"),
-#                                                 col("IntervalSpec_Interval").alias("intervalSize"),
-#                                                 col("FixedAttribute_logNumber").alias("logNumber"),
-#                                                 col("FixedAttribute_ct").alias("ct"),
-#                                                 col("FixedAttribute_pt").alias("pt"),
-#                                                 col("IntervalSpec_Multiplier").alias("ke"),
-#                                                 col("FixedAttribute_sf").alias("sf"),
-#                                                 col("FixedAttribute_version").alias("version"),
-#                                                 col("tmp.Rawreading").alias("readingsValue"),
-#                                                 col("MeterReadings_Source").alias("primarySource"),
-#                                                 col("FixedAttribute_owner").alias("owner"),
-#                                                 col("FixedAttribute_guidFile").alias("guidFile"),
-#                                                 col("FixedAttribute_estatus").alias("estatus"),
-#                                                 col("FixedAttribute_registersNumber").alias("registersNumber"),
-#                                                 col("FixedAttribute_eventsCode").alias("eventsCode"),
-#                                                 col("FixedAttribute_agentId").alias("agentId"),
-#                                                 col("FixedAttribute_agentDescription").alias("agentDescription"))
+IntervalData = []
+for row in df.rdd.collect():
+        MeterReadings_Source = row._Source
+        Meter_Irn = row.Meter._MeterIrn
+        Meter_SdpIdent = row.Meter._SdpIdent
+        if row.IntervalData != None:
+                for intervalData in row.IntervalData:
+                        IntervalSpec_Channel = intervalData.IntervalSpec._Channel
+                        IntervalSpec_Direction = intervalData.IntervalSpec._Direction
+                        IntervalSpec_Interval = intervalData.IntervalSpec._Interval
+                        IntervalSpec_Multiplier = intervalData.IntervalSpec._Multiplier
+                        IntervalSpec_Channel = intervalData.IntervalSpec._Channel
+                        IntervalSpec_UOM = intervalData.IntervalSpec._UOM
+                        for reading in intervalData.Reading:
+                                Reading_RawReading = reading._RawReading
+                                Reading_TimeStamp = reading._TimeStamp
+
+                                servicePointId = Meter_SdpIdent
+                                if servicePointId == None:
+                                        servicePointId = Meter_Irn
+
+
+                                IntervalData.append ({
+                                        "servicePointId":servicePointId,
+                                        "readingType":"Perfiles de carga",
+                                        "variableId":IntervalSpec_UOM + ' ' + IntervalSpec_Direction,
+                                        "deviceId": Meter_Irn,
+                                        "meteringType": "Main",
+                                        "readingUtcLocalTime": "",
+                                        "readingDateSource": "",
+                                        "readingLocalTime": Reading_TimeStamp,
+                                        "dstStatus":"",
+                                        "channel":IntervalSpec_Channel,
+                                        "unitOfMeasure":IntervalSpec_UOM,
+                                        "qualityCodesSystemId":"",
+                                        "qualityCodesCategorization":"",
+                                        "qualityCodesIndex":"",
+                                        "intervalSize":IntervalSpec_Interval,
+                                        "logNumber": "1",
+                                        "ct":"",
+                                        "pt":"",
+                                        "ke":IntervalSpec_Multiplier,
+                                        "sf":"",
+                                        "version":"Original",
+                                        "readingsValue":Reading_RawReading,
+                                        "primarySource":MeterReadings_Source,
+                                        "owner":"",
+                                        "guidFile":"",
+                                        "estatus": "Activo",
+                                        "registersNumber":"",
+                                        "eventsCode":"",
+                                        "agentId":"",
+                                        "agentDescription":""
+                                })
+
+IntervalData = spark.sparkContext.parallelize(IntervalData) \
+                        .map(lambda x: Row(**OrderedDict(x.items())))
+intervalDataReadings = spark.createDataFrame(IntervalData.coalesce(1)) \
+                                .withColumn("primarySource", 
+                                        when(col("primarySource") == "Visual", lit("Visual")) \
+                                        .when(col("primarySource") == "Remote", lit("Remoto")) \
+                                        .when(col("primarySource") == "LocalRF", lit("LAN")) \
+                                        .when(col("primarySource") == "Optical", lit("Optical")) \
+                                        .when(col("primarySource") == "Manually Estimated", lit("Visual")) \
+                                        .when(col("primarySource") == "LegacySystem", lit("HES")) \
+                                        .otherwise(col("primarySource"))) \
+                                .select(
+                                "servicePointId",
+                                "readingType",
+                                "variableId",
+                                "deviceId",
+                                "meteringType",
+                                "readingUtcLocalTime",
+                                "readingDateSource",
+                                "readingLocalTime",
+                                "dstStatus",
+                                "channel",
+                                "unitOfMeasure",
+                                "qualityCodesSystemId",
+                                "qualityCodesCategorization",
+                                "qualityCodesIndex",
+                                "intervalSize",
+                                "logNumber",
+                                "ct",
+                                "pt",
+                                "ke",
+                                "sf",
+                                "version",
+                                "readingsValue",
+                                "primarySource",
+                                "owner",
+                                "guidFile",
+                                "estatus",
+                                "registersNumber",
+                                "eventsCode",
+                                "agentId",
+                                "agentDescription"
+                                )
 ######################################################################################################################################################
 
 print("-----------------------MAX DEMAND DATA READINGS ------------------------------")
@@ -1648,19 +1668,25 @@ reverseEnergySummaryReadings.write.format("csv").mode("overwrite")\
                         .save("./output/ReverseEnergySummaryReadings",header = 'true', emptyValue='')
 print("------------------------------------------------------------------------------")
 
-# print("-----------------------INTERVAL DATA READINGS ---------------------------")
-# intervalDataReadings.write.format("csv").mode("overwrite")\
-#                         .save("./output/IntervalDataReadings",header = 'true', emptyValue='')
-# print("------------------------------------------------------------------------------")
+print("-----------------------INTERVAL DATA READINGS ---------------------------")
+intervalDataReadings.write.format("csv").mode("overwrite")\
+                        .save("./output/IntervalDataReadings",header = 'true', emptyValue='')
+print("------------------------------------------------------------------------------")
 
-# def unionAll(*dfs):
-#     return reduce(DataFrame.unionAll, dfs)
+print("-----------------------EVENT DATA READINGS ---------------------------")
+eventDataReadings.write.format("csv").mode("overwrite")\
+                        .save("./output/EventDataReadings",header = 'true', emptyValue='')
+print("------------------------------------------------------------------------------")
 
-# union = unionAll(maxDemandDataReadings, demandResetCountReadings, \
-#         consumptionDataReadings, coincidentDemandDataReadings, \
-#         cumulativeDemandDataReadings, demandResetReadings, \
-#         instrumentationValueReadings, statusReadings, \
-#         loadProfileSummaryReadings, outageCountReadings, \
-#         reverseEnergySummaryReadings, intervalDataReadings).coalesce(1) #Aca los estoy uniendo en una sola partición, si se saca el .coalesce(1) se van a crear distintas particiones para c/u
+def unionAll(*dfs):
+    return reduce(DataFrame.unionAll, dfs)
 
-# union.write.format('csv').mode("overwrite").save("./output/union", header="true", emptyValue="")
+union = unionAll(maxDemandDataReadings, demandResetCountReadings, \
+        consumptionDataReadings, coincidentDemandDataReadings, \
+        cumulativeDemandDataReadings, demandResetReadings, \
+        instrumentationValueReadings, statusReadings, \
+        loadProfileSummaryReadings, outageCountReadings, \
+        reverseEnergySummaryReadings, intervalDataReadings, \
+        eventDataReadings).coalesce(1) #Aca los estoy uniendo en una sola partición, si se saca el .coalesce(1) se van a crear distintas particiones para c/u
+
+union.write.format('csv').mode("overwrite").save("./output/union", header="true", emptyValue="")
