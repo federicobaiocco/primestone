@@ -404,7 +404,10 @@ consumptionDataReadings = consumptionDataReadings.withColumn("tmp", arrays_zip("
                                                     col("FixedAttribute_registersNumber").alias("registersNumber"),
                                                     col("FixedAttribute_eventsCode").alias("eventsCode"),
                                                     col("FixedAttribute_agentId").alias("agentId"),
-                                                    col("FixedAttribute_agentDescription").alias("agentDescription"))
+                                                    col("FixedAttribute_agentDescription").alias("agentDescription")) \
+                                                .withColumn("unitOfMeasure", 
+                                                        when(col("unitOfMeasure") == 'Degree', lit("°")) \
+                                                        .otherwise(col("unitOfMeasure")))
 ######################################################################################################################################################
 
 ######################################################################################################################################################
@@ -830,7 +833,7 @@ instrumentationValueReadings = instrumentationValueReadings.withColumn("tmp", ar
                                                             .withColumn("Translated_Name", 
                                                                         when(col("tmp.Name") == "Current", "A") \
                                                                         .when(col("tmp.Name") == "Voltage", "V") \
-                                                                        .when(col("tmp.Name") == "Power Factor Angle", "Degree") \
+                                                                        .when(col("tmp.Name") == "Power Factor Angle", "°") \
                                                                         .when(col("tmp.Name") == "Frequency", "Hz") \
                                                                         .otherwise(lit("")) \
                                                             ) \
