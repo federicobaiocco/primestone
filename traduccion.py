@@ -1759,4 +1759,16 @@ union = unionAll(maxDemandDataReadings, demandResetCountReadings, \
         reverseEnergySummaryReadings, intervalDataReadings, \
         eventDataReadings).coalesce(1) #Aca los estoy uniendo en una sola partición, si se saca el .coalesce(1) se van a crear distintas particiones para c/u
 
+# Se unen los 4 campos: ct, pt, ke y sf en un solo campo con el nombre Multipliers
+union = union.withColumn("multiplier",
+                         concat(
+                                 lit("'MultiplierValues':{ 'ct': '', 'pt':'', 'ke':'"), \
+                                 col("ke"), \
+                                 lit("', 'sf': ''}")
+                                )
+                        )
+# Se dropean las columnas que se unieron en el paso anterior
+columns_to_drop = ['ct', 'pt', 'ke', 'sf']
+union = union.drop(*columns_to_drop)
+
 union.write.format('csv').mode("overwrite").save("./output/union", header="true", emptyValue="")

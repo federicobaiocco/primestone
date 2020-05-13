@@ -1,0 +1,6 @@
+servicePointId,readingType,variableId,deviceId,meteringType,readingUtcLocalTime,readingDateSource,readingLocalTime,dstStatus,channel,unitOfMeasure,qualityCodesSystemId,qualityCodesCategorization,qualityCodesIndex,intervalSize,logNumber,ct,pt,ke,sf,version,readingsValue,primarySource,owner,guidFile,estatus,registersNumber,eventsCode,agentId,agentDescription
+1test,Registros,kW Delivered Total,1,Main,,2011-05-16T06:32:37.000-03:00,2011-05-16T06:32:37.000-03:00,,,kW,,,,,,,,1,,,92.176,Remoto,PRIMEREAD,Nombre del archivo,Activo,,,,
+1test,Registros,kW Delivered TierB,1,Main,,2015-05-16T06:32:37.000-03:00,2015-05-16T06:32:37.000-03:00,,,kW,,,,,,,,1,,,0.0,Remoto,PRIMEREAD,Nombre del archivo,Activo,,,,
+2testEE,Registros,kW Delivered Total,2,Main,,2011-05-16T06:32:37.000-03:00,2011-05-16T06:32:37.000-03:00,,,kW,,,,,,,,1,,,92.176,Remoto,PRIMEREAD,Nombre del archivo,Activo,,,,
+2testEE,Registros,kW Delivered TierB,2,Main,,2011-05-16T06:40:00.000-03:00,2011-05-16T06:40:00.000-03:00,,,kW,,,,,,,,1,,,0.0,Remoto,PRIMEREAD,Nombre del archivo,Activo,,,,
+2testEE,Registros,kW Delivered TierC,2,Main,,2011-05-16T06:32:37.000-03:00,2011-05-16T06:32:37.000-03:00,,,kW,,,,,,,,1,,,92.176,Remoto,PRIMEREAD,Nombre del archivo,Activo,,,,
