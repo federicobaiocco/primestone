@@ -27,7 +27,7 @@ schema = StructType.fromJson(json.loads(strSch))
 
 df = spark.read.format("com.databricks.spark.xml").options(rootTag=rootTag).options(rowTag=rowTag).options(nullValue="").options(valueTag="_valueTag") \
     .schema(schema) \
-    .load("file:////home/federicobaiocco/Downloads/primestone/Scriptstraducccion/final/amrdef_sample_2.xml")
+    .load("file:////home/federicobaiocco/Downloads/primestone/Scriptstraducccion/final/AMRDEF_sample.xml")
 
 '''
 Se crea un dataframe por cada tipo de lectura (MaxDemandData, DemandResetCount, etc.) porque es la forma más facil de tratarlos para la traducción.
